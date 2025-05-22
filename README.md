@@ -34,6 +34,28 @@ The backend is developed in Go and provides the API services for the platform.
     ```
     The server will start on `http://localhost:8080`.
 
+### Backend ORM (entgo)
+
+This project uses [entgo](https://entgo.io/) as the Object-Relational Mapper (ORM) for the Go backend to manage database interactions.
+
+**Defining Schemas:**
+Entity schemas (the structure of your data) are defined as Go code in the `backend/ent/schema/` directory. For example, `backend/ent/schema/user.go` defines the schema for users.
+
+**Generating ORM Code:**
+After you modify or add new schemas, you need to regenerate the ORM code. Navigate to the backend directory and run:
+```bash
+cd backend
+go generate ./...
+```
+If you encounter issues with the `ent` command not being found, you might need to install the `ent` CLI tool locally:
+```bash
+go install entgo.io/ent/cmd/ent@latest
+```
+**Important Note:** During the automated setup of this project, the `go generate ./...` and `go install entgo.io/ent/cmd/ent@latest` commands have consistently timed out. This means the `ent` ORM code was likely not generated automatically. If you are setting this up manually, these commands are crucial.
+
+**Database Migrations:**
+For development purposes, database schema migrations are handled automatically on application startup by the `client.Schema.Create(...)` call in `backend/main.go`. This will create or update tables according to the defined schemas. For production environments, a more robust migration strategy would be required.
+
 ## Frontend (React Spectrum)
 
 The frontend is developed using React and Adobe's React Spectrum component library for a rich user interface.
