@@ -56,6 +56,30 @@ go install entgo.io/ent/cmd/ent@latest
 **Database Migrations:**
 For development purposes, database schema migrations are handled automatically on application startup by the `client.Schema.Create(...)` call in `backend/main.go`. This will create or update tables according to the defined schemas. For production environments, a more robust migration strategy would be required.
 
+### Backend Access Control (Casbin)
+
+This project uses [Casbin](https://casbin.org/) to manage access control and authorization for the Go backend.
+
+**Model Configuration:**
+The access control model (e.g., RBAC - Role-Based Access Control) is defined in `backend/casbin_model.conf`. This file specifies the structure of requests, policies, roles, and how they are matched.
+
+**Policy Rules:**
+Policy rules are defined in `backend/casbin_policy.csv`. You can add rules to grant or deny permissions.
+- To grant a role permission to access a path with a specific HTTP method:
+  `p, <role_name>, <path>, <http_method>`
+  Example: `p, teacher, /courses, GET`
+- To assign a user to a role (using placeholder User IDs for now):
+  `g, <user_id>, <role_name>`
+  Example: `g, user_teacher_001, teacher`
+
+**Middleware Integration:**
+Access control is enforced via middleware in `backend/main.go`:
+1.  `BasicAuthMiddleware`: This is a **placeholder authentication middleware**. For testing, it reads `X-User-ID` and `X-User-Role` headers to determine the user's identity and role. If specific test user IDs (e.g., `user_admin_001`, `user_teacher_001`) are provided in `X-User-ID`, corresponding roles ("admin", "teacher") are assigned. Otherwise, it defaults to an "anonymous" user and role.
+2.  `Authorizer` Middleware: This middleware uses the Casbin enforcer to check if the authenticated user's role has permission to access the requested resource (path) and action (HTTP method) based on the policies defined in `casbin_policy.csv`.
+
+**Dependencies:**
+If you haven't already, you'll need to ensure Casbin dependencies are downloaded locally by running `go mod tidy` in the `backend` directory. **Important Note:** During the automated setup of this project, `go mod tidy` commands have consistently timed out. If you are setting this up manually, this command is crucial for fetching Casbin and other backend dependencies.
+
 ## Frontend (React Spectrum)
 
 The frontend is developed using React and Adobe's React Spectrum component library for a rich user interface.
