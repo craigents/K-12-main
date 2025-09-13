@@ -1,0 +1,19 @@
+# Casbin RBAC policy rules
+
+# Admins can do anything on any resource (example of a broad permission)
+# p, admin, .*, .* 
+
+# More specific: Admins can create users
+p, admin, /users, POST
+
+# Teachers can create and view courses (placeholder paths/actions)
+p, teacher, /courses, POST
+p, teacher, /courses, GET
+
+# Assign a placeholder user ID to the admin role.
+# In a real system, user IDs would come from your user database.
+# For testing, we'll assume a user with ID "user_admin_001" is an admin.
+g, user_admin_001, admin
+
+# Assign a placeholder user ID to the teacher role.
+g, user_teacher_001, teacher
